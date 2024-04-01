@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="descriptive description" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      main {
+        display: flex;
+        flex-direction: column;
+        place-items: center;
+        gap: 0.5rem;
+      }
+      form {
+        display: none;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td,
+      th,
+      input {
+        border: 1px solid #000;
+        padding: 0.25rem 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    {{template "htmx.html"}}
+    <main>
+      <button>Toggle Filter</button>
+      <form hx-get="/filter" hx-trigger="input delay:100ms" hx-target="tbody">
+        <fieldset>
+          <legend>Multisearch</legend>
+          <input name="search" type="text" placeholder="'Ryzen 5'" />
+          <input name="search2" type="text" placeholder="'Thinkpad'" />
+        </fieldset>
+        <fieldset>
+          <legend>Hide unknown model</legend>
+          <label><input name="empty" type="radio" value=" " checked/>No</label>
+          <label><input name="empty" type="radio" value=""/>Yes</label>
+        </fieldset>
+        <fieldset>
+          <legend>Order by</legend>
+          <label><input name="column" type="radio" value="laptops.price" checked />Price</label>
+          <label><input name="column" type="radio" value="cpus.cores"  />Cores</label>
+          <label><input name="column" type="radio" value="cpus.clockspeed"  />Clockspeed</label>
+          <label><input name="column" type="radio" value="cpus.gpucores"  />GPU Cores</label>
+          <label><input name="column" type="radio" value="cpus.gpuclockspeed"  />GPU Clockspeed</label>
+        </fieldset>
+        <fieldset>
+          <legend>Order</legend>
+          <label><input name="order" type="radio" value="asc" checked />Low -> High</label>
+          <label><input name="order" type="radio" value="desc" />High -> Low</label>
+        </fieldset>
+        <fieldset>
+          <legend>Price</legend>
+          <input name="minprice" type="number" placeholder="Min Price" />
+          <input name="maxprice" type="number" placeholder="Max Price" />
+        </fieldset>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>Link</th>
+            <th>Price</th>
+            <th>Family</th>
+            <th>Model</th>
+            <th>Cores</th>
+            <th>Threads</th>
+            <th>Clockspeed</th>
+            <th>GPU Cores</th>
+            <th>GPU Clockspeed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{block "data" .}} {{range .}}
+          <tr>
+            <td title="{{.Searchtext}}"><a href="{{.Link}}" target="_blank">{{.Title}}</a></td>
+            <td>{{.Price}}€</td>
+            <td>{{.Family}}</td>
+            <td>{{.Model}}</td>
+            <td>{{.Cores}}</td>
+            <td>{{.Threads}}</td>
+            <td>{{.Clockspeed}}GHz</td>
+            <td>{{.Gpucores}}</td>
+            <td>{{.Gpuclockspeed}}GHz</td>
+          </tr>
+          {{end}} {{end}}
+        </tbody>
+      </table>
+    </main>
+    <script>
+      const form = document.querySelector("form");
+      const btn = document.querySelector("button");
+
+      btn.onclick = () => (form.style.display == "block" ? (form.style.display = "none") : (form.style.display = "block"));
+    </script>
+  </body>
+</html>
